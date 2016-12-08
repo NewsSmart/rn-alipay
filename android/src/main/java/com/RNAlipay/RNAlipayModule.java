@@ -121,7 +121,7 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
         /**
          * 完整的符合支付宝参数规范的订单信息
          */
-        final String payInfo = orderInfoTemp + "&sign=\"" + sign ;
+        final String payInfo = orderInfoTemp + "&sign=" + sign ;
 
         System.out.println(payInfo);
 
