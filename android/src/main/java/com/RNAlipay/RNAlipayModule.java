@@ -52,42 +52,66 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
   	public void pay(ReadableMap options, Promise promise) {
 
         String privateKey = options.getString("privateKey");
-        String partner = options.getString("partner");
-        String seller = options.getString("seller");
+        String app_id = options.getString("app_id");
+        String seller_id = options.getString("seller_id");
         String outTradeNO = options.getString("outTradeNO");
         String subject = options.getString("subject");
         String body = options.getString("body");
         String notifyURL = options.getString("notifyURL");
 
-        String totalFee;
-        if (options.getType("totalFee") == ReadableType.Number) {
-             totalFee = Double.toString(options.getDouble("totalFee"));
+        String total_amount;
+        if (options.getType("total_amount") == ReadableType.Number) {
+             total_amount = Double.toString(options.getDouble("total_amount"));
         } else {
-             totalFee = options.getString("totalFee");
+             total_amount = options.getString("total_amount");
         }
 
-        String itBPay = options.getString("itBPay");
+        String timeout_express = options.getString("timeout_express");
         String showURL = options.getString("showURL");
 
-		if (TextUtils.isEmpty(partner) || TextUtils.isEmpty(privateKey) || TextUtils.isEmpty(seller)) {
+		if (TextUtils.isEmpty(app_id) || TextUtils.isEmpty(privateKey) || TextUtils.isEmpty(seller_id)) {
 
-		    promise.reject("需要配置PARTNER | RSA_PRIVATE| SELLER");
+		    promise.reject("需要配置APPID | RSA_PRIVATE| SELLERID");
 
 			return;
 		}
 
-		String orderInfo = getOrderInfo(partner, seller, outTradeNO, subject, body, totalFee, itBPay, showURL, notifyURL);
+		String orderInfo = getOrderInfo(app_id, seller_id, outTradeNO, subject, body, total_amount, timeout_express, showURL, notifyURL);
 
 		/**
 		 * 特别注意，这里的签名逻辑需要放在服务端，切勿将私钥泄露在代码中！
 		 */
 		String sign = sign(orderInfo, privateKey);
+		String orderInfoTemp = "";
 
         try {
             /**
              * 仅需对sign 做URL编码
              */
-            sign = URLEncoder.encode(sign, "UTF-8");
+            	sign = URLEncoder.encode(sign, "UTF-8");
+		// 签约合作者身份ID
+		orderInfoTemp = "app_id=" + "\"" + URLEncoder.encode(app_id,"UTF-8") + "\"";
+		String biz_content = "{\"timeout_express\":\""+timeout_express+"\",\"seller_id\":\""+seller_id+"\",\"product_code\":\"QUICK_MSECURITY_PAY\","
+					+"\"total_amount\":\""+total_amount+"\",\"subject\":\""+subject+"\",\"body\":\""+body+"\",\"out_trade_no\":\""
+					+outTradeNO+"\"}"
+		orderInfoTemp += "&biz_content="+"\"" + URLEncoder.encode(biz_content,"UTF-8") + "\"";
+		// 参数编码， 固定值
+		orderInfoTemp += "&charset=\""+URLEncoder.encode("utf-8","UTF-8")+"\"";
+		// 参数编码， 固定值
+		orderInfoTemp += "&format=\""+URLEncoder.encode("json","UTF-8")+"\"";
+
+		// 服务接口名称， 固定值
+		orderInfoTemp += "&method=\""+URLEncoder.encode("alipay.trade.app.pay","UTF-8")+"\"";
+
+		// 调用银行卡支付，需配置此参数，参与签名， 固定值 （需要签约《无线银行卡快捷支付》才能使用）
+		// orderInfo += "&paymethod=\"expressGateway\"";
+
+		orderInfoTemp += "&notify_url=\"" + URLEncoder.encode(notifyURL,"UTF-8") + "\"";
+
+		orderInfoTemp += "&sign_type=\"" + URLEncoder.encode("RSA","UTF-8") + "\"";
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+		orderInfoTemp += "&timestamp=\"" + URLEncoder.encode(df.format(new Date()),"UTF-8") + "\"";
+		orderInfoTemp += "&version=\"" + URLEncoder.encode("1.0","UTF-8") + "\"";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -95,7 +119,7 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
         /**
          * 完整的符合支付宝参数规范的订单信息
          */
-        final String payInfo = orderInfo + "&sign=\"" + sign + "\"&" + getSignType();
+        final String payInfo = orderInfoTemp + "&sign=\"" + sign ;
 
         System.out.println(payInfo);
 
@@ -109,61 +133,43 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 	 * 
 	 */
 	public String getOrderInfo(
-	    String partner,
-	    String seller,
+	    String app_id,
+	    String seller_id,
 	    String outTradeNO,
 	    String subject,
 	    String body,
-	    String totalFee,
-	    String itBPay,
+	    String total_amount,
+	    String timeout_express,
 	    String showURL,
 	    String notifyURL
 	) {
-
+		String orderInfo = null;
+		
 		// 签约合作者身份ID
-		String orderInfo = "partner=" + "\"" + partner + "\"";
-
-		// 签约卖家支付宝账号
-		orderInfo += "&seller_id=" + "\"" + seller + "\"";
-
-		// 商户网站唯一订单号
-		orderInfo += "&out_trade_no=" + "\"" + outTradeNO + "\"";
-
-		// 商品名称
-		orderInfo += "&subject=" + "\"" + subject + "\"";
-
-		// 商品详情
-		orderInfo += "&body=" + "\"" + body + "\"";
-
-		// 商品金额
-		orderInfo += "&total_fee=" + "\"" + totalFee + "\"";
+		orderInfo = "app_id=" + "\"" + app_id+ "\"";
+		String biz_content = "{\"timeout_express\":\""+timeout_express+"\",\"seller_id\":\""+seller_id+"\",\"product_code\":\"QUICK_MSECURITY_PAY\","
+					+"\"total_amount\":\""+total_amount+"\",\"subject\":\""+subject+"\",\"body\":\""+body+"\",\"out_trade_no\":\""
+					+outTradeNO+"\"}"
+		orderInfo += "&biz_content="+"\"" + biz_content + "\"";
+		// 参数编码， 固定值
+		orderInfo += "&charset=\"utf-8\"";
+		// 参数编码， 固定值
+		orderInfo += "&format=\"json\"";
 
 		// 服务接口名称， 固定值
-		orderInfo += "&service=\"mobile.securitypay.pay\"";
-
-		// 支付类型， 固定值
-		orderInfo += "&payment_type=\"1\"";
-
-		// 参数编码， 固定值
-		orderInfo += "&_input_charset=\"utf-8\"";
-
-		// 设置未付款交易的超时时间
-		// 默认30分钟，一旦超时，该笔交易就会自动被关闭。
-		// 取值范围：1m～15d。
-		// m-分钟，h-小时，d-天，1c-当天（无论交易何时创建，都在0点关闭）。
-		// 该参数数值不接受小数点，如1.5h，可转换为90m。
-		orderInfo += "&it_b_pay=\"" + itBPay + "\"";
-
-		// extern_token为经过快登授权获取到的alipay_open_id,带上此参数用户将使用授权的账户进行支付
-		// orderInfo += "&extern_token=" + "\"" + extern_token + "\"";
-
-		// 支付宝处理完请求后，当前页面跳转到商户指定页面的路径，可空
-		orderInfo += "&return_url=\"" + showURL + "\"";
+		orderInfo += "&method=\"alipay.trade.app.pay\"";
 
 		// 调用银行卡支付，需配置此参数，参与签名， 固定值 （需要签约《无线银行卡快捷支付》才能使用）
 		// orderInfo += "&paymethod=\"expressGateway\"";
 
-		orderInfo += "&notify_url=\"" + notifyURL + "\"";
+		orderInfo += "&notify_url=\"" + notifyURL+ "\"";
+
+		orderInfo += "&sign_type=\"RSA\"";
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+		orderInfo += "&timestamp=\"" + df.format(new Date())+ "\"";
+		orderInfo += "&version=\"1.0\"";
+		
+
 
 		return orderInfo;
 	}
