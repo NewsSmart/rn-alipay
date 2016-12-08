@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
+import android.util.Log;
 
 
 import com.facebook.react.bridge.ReactApplicationContext;
