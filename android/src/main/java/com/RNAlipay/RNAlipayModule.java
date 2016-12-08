@@ -93,7 +93,7 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 		orderInfoTemp = "app_id=" + "\"" + URLEncoder.encode(app_id,"UTF-8") + "\"";
 		String biz_content = "{\"timeout_express\":\""+timeout_express+"\",\"seller_id\":\""+seller_id+"\",\"product_code\":\"QUICK_MSECURITY_PAY\","
 					+"\"total_amount\":\""+total_amount+"\",\"subject\":\""+subject+"\",\"body\":\""+body+"\",\"out_trade_no\":\""
-					+outTradeNO+"\"}"
+					+outTradeNO+"\"}";
 		orderInfoTemp += "&biz_content="+"\"" + URLEncoder.encode(biz_content,"UTF-8") + "\"";
 		// 参数编码， 固定值
 		orderInfoTemp += "&charset=\""+URLEncoder.encode("utf-8","UTF-8")+"\"";
@@ -149,7 +149,7 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 		orderInfo = "app_id=" + "\"" + app_id+ "\"";
 		String biz_content = "{\"timeout_express\":\""+timeout_express+"\",\"seller_id\":\""+seller_id+"\",\"product_code\":\"QUICK_MSECURITY_PAY\","
 					+"\"total_amount\":\""+total_amount+"\",\"subject\":\""+subject+"\",\"body\":\""+body+"\",\"out_trade_no\":\""
-					+outTradeNO+"\"}"
+					+outTradeNO+"\"}";
 		orderInfo += "&biz_content="+"\"" + biz_content + "\"";
 		// 参数编码， 固定值
 		orderInfo += "&charset=\"utf-8\"";
