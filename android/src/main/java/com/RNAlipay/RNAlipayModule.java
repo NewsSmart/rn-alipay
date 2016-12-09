@@ -160,7 +160,7 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 	  //} else {
 		// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
 		//promise.resolve("支付失败");
-	  /}
+	  //}
     }
 	
 	@SuppressLint("HandlerLeak")
