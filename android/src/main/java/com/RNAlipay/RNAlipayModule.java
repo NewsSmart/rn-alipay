@@ -123,8 +123,8 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
          * 完整的符合支付宝参数规范的订单信息
          */
 	
-	  //final String payInfo = options.getString("payInfo");
-	  final String payInfo = "app_id=2015122001014807&biz_content=%7b%22timeout_express%22%3a%2230m%22%2c%22seller_id%22%3a%2218980084779%22%2c%22product_code%22%3a%22QUICK_MSECURITY_PAY%22%2c%22total_amount%22%3a%220.01%22%2c%22subject%22%3a%22%e5%90%ac%e6%88%bfAPP%22%2c%22body%22%3a%2268%e6%88%bf%e4%ba%a7%22%2c%22out_trade_no%22%3a%2216120916173410679429289442474716%22%7d&charset=utf-8&format=json&method=alipay.trade.app.pay&notify_url=http%3a%2f%2fwww.baidu.com&sign_type=RSA&timestamp=2016-12-09+16%3a17%3a34&version=1.0&sign=WYY6KHrbvXGd2N1sdO2ZeSWEd09aPsKADOCfuJO%2b3z1SP%2b9LGHDfPHJQfdqVGpVi3nts0qfPObJyxpVliClswY%2bUrK8621a4cHPqa7JuYadOviSH1gB%2f5CPohtkAhsaN7u0SUCTACUYvWi3tpUVs0%2fDM%2ftz6FOhSDHVSQUSuWfU%3d";
+	  final String payInfo = options.getString("payInfo");
+	  
 	  promise.resolve(payInfo);
 	  PayTask alipay = new PayTask(getCurrentActivity());
 	  Map<String, String> result = alipay.payV2(payInfo, true);
