@@ -164,7 +164,7 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 	    String notifyURL,
 	    String timestampTemp
 	) {
-		String orderInfo = null;
+		String orderInfo = "";
 		
 		// 签约合作者身份ID
 		//orderInfo = "app_id=" + "\"" + app_id+ "\"";
