@@ -78,7 +78,7 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 			return;
 		}
 	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
-	String timestampTemp = df.format(new Date())
+	String timestampTemp = df.format(new Date());
 		String orderInfo = getOrderInfo(app_id, seller_id, outTradeNO, subject, body, total_amount, timeout_express, showURL, notifyURL,timestampTemp);
 
 		/**
