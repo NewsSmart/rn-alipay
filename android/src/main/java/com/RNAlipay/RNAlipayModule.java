@@ -77,8 +77,9 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 
 			return;
 		}
-
-		String orderInfo = getOrderInfo(app_id, seller_id, outTradeNO, subject, body, total_amount, timeout_express, showURL, notifyURL);
+	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+	String timestampTemp = df.format(new Date())
+		String orderInfo = getOrderInfo(app_id, seller_id, outTradeNO, subject, body, total_amount, timeout_express, showURL, notifyURL,timestampTemp);
 
 		/**
 		 * 特别注意，这里的签名逻辑需要放在服务端，切勿将私钥泄露在代码中！
@@ -92,28 +93,28 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
              */
             	sign = URLEncoder.encode(sign, "UTF-8");
 		// 签约合作者身份ID
-		orderInfoTemp = "app_id=" + "\"" + URLEncoder.encode(app_id,"UTF-8") + "\"";
+		orderInfoTemp = "app_id=" + URLEncoder.encode(app_id,"UTF-8");
 		String biz_content = "{\"timeout_express\":\""+timeout_express+"\",\"seller_id\":\""+seller_id+"\",\"product_code\":\"QUICK_MSECURITY_PAY\","
 					+"\"total_amount\":\""+total_amount+"\",\"subject\":\""+subject+"\",\"body\":\""+body+"\",\"out_trade_no\":\""
 					+outTradeNO+"\"}";
-		orderInfoTemp += ("&biz_content="+"\"" + URLEncoder.encode(biz_content,"UTF-8") + "\"");
+		orderInfoTemp += ("&biz_content=" + URLEncoder.encode(biz_content,"UTF-8"));
 		// 参数编码， 固定值
-		orderInfoTemp += ("&charset=\""+URLEncoder.encode("utf-8","UTF-8")+"\"");
+		orderInfoTemp += ("&charset="+URLEncoder.encode("utf-8","UTF-8"));
 		// 参数编码， 固定值
-		orderInfoTemp += ("&format=\""+URLEncoder.encode("json","UTF-8")+"\"");
+		orderInfoTemp += ("&format="+URLEncoder.encode("json","UTF-8"));
 
 		// 服务接口名称， 固定值
-		orderInfoTemp += ("&method=\""+URLEncoder.encode("alipay.trade.app.pay","UTF-8")+"\"");
+		orderInfoTemp += ("&method="+URLEncoder.encode("alipay.trade.app.pay","UTF-8"));
 
 		// 调用银行卡支付，需配置此参数，参与签名， 固定值 （需要签约《无线银行卡快捷支付》才能使用）
 		// orderInfo += "&paymethod=\"expressGateway\"";
 
-		orderInfoTemp += ("&notify_url=\"" + URLEncoder.encode(notifyURL,"UTF-8") + "\"");
+		orderInfoTemp += ("&notify_url=" + URLEncoder.encode(notifyURL,"UTF-8"));
 
-		orderInfoTemp += ("&sign_type=\"" + URLEncoder.encode("RSA","UTF-8") + "\"");
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
-		orderInfoTemp += ("&timestamp=\"" + URLEncoder.encode(df.format(new Date()),"UTF-8") + "\"");
-		orderInfoTemp += ("&version=\"" + URLEncoder.encode("1.0","UTF-8") + "\"");
+		orderInfoTemp += ("&sign_type=" + URLEncoder.encode("RSA","UTF-8"));
+		
+		orderInfoTemp += ("&timestamp=" + URLEncoder.encode(timestampTemp,"UTF-8"));
+		orderInfoTemp += ("&version=" + URLEncoder.encode("1.0","UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -160,15 +161,16 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 	    String total_amount,
 	    String timeout_express,
 	    String showURL,
-	    String notifyURL
+	    String notifyURL,
+	    String timestampTemp
 	) {
-		String orderInfoTemp = null;
+		String orderInfo = null;
 		
 		// 签约合作者身份ID
 		//orderInfo = "app_id=" + "\"" + app_id+ "\"";
 		//String biz_content = "{\"timeout_express\":\""+timeout_express+"\",\"seller_id\":\""+seller_id+"\",\"product_code\":\"QUICK_MSECURITY_PAY\","
-					+"\"total_amount\":\""+total_amount+"\",\"subject\":\""+subject+"\",\"body\":\""+body+"\",\"out_trade_no\":\""
-					+outTradeNO+"\"}";
+					//+"\"total_amount\":\""+total_amount+"\",\"subject\":\""+subject+"\",\"body\":\""+body+"\",\"out_trade_no\":\""
+					//+outTradeNO+"\"}";
 		//orderInfo += ("&biz_content="+"\"" + biz_content + "\"");
 		// 参数编码， 固定值
 		//orderInfo += ("&charset=\"utf-8\"");
@@ -188,33 +190,37 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 		//orderInfo += ("&timestamp=\"" + df.format(new Date())+ "\"");
 		//orderInfo += ("&version=\"1.0\"");
 		
+		
+		
 		// 签约合作者身份ID
-		orderInfoTemp = "app_id=" + "\"" + URLEncoder.encode(app_id,"UTF-8") + "\"";
+		orderInfo = "app_id=" +  app_id;
 		String biz_content = "{\"timeout_express\":\""+timeout_express+"\",\"seller_id\":\""+seller_id+"\",\"product_code\":\"QUICK_MSECURITY_PAY\","
 					+"\"total_amount\":\""+total_amount+"\",\"subject\":\""+subject+"\",\"body\":\""+body+"\",\"out_trade_no\":\""
 					+outTradeNO+"\"}";
-		orderInfoTemp += ("&biz_content="+"\"" + URLEncoder.encode(biz_content,"UTF-8") + "\"");
+		orderInfo += ("&biz_content="+ biz_content);
 		// 参数编码， 固定值
-		orderInfoTemp += ("&charset=\""+URLEncoder.encode("utf-8","UTF-8")+"\"");
+		orderInfo += ("&charset=utf-8");
 		// 参数编码， 固定值
-		orderInfoTemp += ("&format=\""+URLEncoder.encode("json","UTF-8")+"\"");
+		orderInfo += ("&format=json");
 
 		// 服务接口名称， 固定值
-		orderInfoTemp += ("&method=\""+URLEncoder.encode("alipay.trade.app.pay","UTF-8")+"\"");
+		orderInfo += ("&method=alipay.trade.app.pay");
 
 		// 调用银行卡支付，需配置此参数，参与签名， 固定值 （需要签约《无线银行卡快捷支付》才能使用）
 		// orderInfo += "&paymethod=\"expressGateway\"";
 
-		orderInfoTemp += ("&notify_url=\"" + URLEncoder.encode(notifyURL,"UTF-8") + "\"");
+		orderInfo += ("&notify_url=" + notifyURL);
 
-		orderInfoTemp += ("&sign_type=\"" + URLEncoder.encode("RSA","UTF-8") + "\"");
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
-		orderInfoTemp += ("&timestamp=\"" + URLEncoder.encode(df.format(new Date()),"UTF-8") + "\"");
-		orderInfoTemp += ("&version=\"" + URLEncoder.encode("1.0","UTF-8") + "\"");
+		orderInfo += ("&sign_type=RSA");
+		
+		orderInfo += ("&timestamp=" + timestampTemp);
+		orderInfo += ("&version=1.0");
+		
+		
 		
 
 
-		return orderInfoTemp;
+		return orderInfo;
 	}
 
 	/**
