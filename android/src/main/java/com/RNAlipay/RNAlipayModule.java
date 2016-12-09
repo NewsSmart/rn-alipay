@@ -14,7 +14,7 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.util.Log;
-import android.widget.Toast;
+
 
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -36,7 +36,7 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
 	//public static final String RSA_PRIVATE = "";
 	// 支付宝公钥
 	//public static final String RSA_PUBLIC = "";
-	private static final int SDK_PAY_FLAG = 1;
+	//private static final int SDK_PAY_FLAG = 1;
 	//private static final int SDK_CHECK_FLAG = 2;
 
 	private final ReactApplicationContext mReactContext;
@@ -125,73 +125,30 @@ public class RNAlipayModule extends ReactContextBaseJavaModule {
          */
 	
 	  final String payInfo = options.getString("payInfo");
-	  Runnable payRunnable = new Runnable() {
-
-		@Override
-		public void run() {
-			PayTask alipay = new PayTask(getCurrentActivity());
-			Map<String, String> result = alipay.payV2(payInfo, true);
-			
-
-			Message msg = new Message();
-			msg.what = SDK_PAY_FLAG;
-			msg.obj = result;
-			mHandler.sendMessage(msg);
-		}
-	  };
-
-	  Thread payThread = new Thread(payRunnable);
-	  payThread.start();
+	 
 		
-	  //PayTask alipay = new PayTask(getCurrentActivity());
-	  //Map<String, String> result = alipay.payV2(payInfo, true);
+	  PayTask alipay = new PayTask(getCurrentActivity());
+	  Map<String, String> result = alipay.payV2(payInfo, true);
 	  //cb.invoke(result);
 	  //promise.resolve(result);
-	  //@SuppressWarnings("unchecked")
-	  //PayResult payResult = new PayResult((Map<String, String>) result);
+	  @SuppressWarnings("unchecked")
+	  PayResult payResult = new PayResult((Map<String, String>) result);
 	  /**
 	   对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
 	   */
-	  //String resultInfo = payResult.getResult();// 同步返回需要验证的信息
-	  //String resultStatus = payResult.getResultStatus();
+	  String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+	  String resultStatus = payResult.getResultStatus();
 	  // 判断resultStatus 为9000则代表支付成功
-	  //if (TextUtils.equals(resultStatus, "9000")) {
+	  if (TextUtils.equals(resultStatus, "9000")) {
 		// 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
-		//promise.resolve("支付成功");
-	  //} else {
+		promise.resolve("支付成功");
+	  } else {
 		// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
-		//promise.resolve("支付失败");
-	  //}
+		promise.resolve("支付失败");
+	  }
     }
 	
-	@SuppressLint("HandlerLeak")
-	private Handler mHandler = new Handler() {
-		@SuppressWarnings("unused")
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case SDK_PAY_FLAG: {
-				@SuppressWarnings("unchecked")
-				PayResult payResult = new PayResult((Map<String, String>) msg.obj);
-				/**
-				 对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
-				 */
-				String resultInfo = payResult.getResult();// 同步返回需要验证的信息
-				String resultStatus = payResult.getResultStatus();
-				// 判断resultStatus 为9000则代表支付成功
-				if (TextUtils.equals(resultStatus, "9000")) {
-					// 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
-					Toast.makeText(getCurrentActivity(), "支付成功", Toast.LENGTH_SHORT).show();
-				} else {
-					// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
-					Toast.makeText(getCurrentActivity(), "支付失败", Toast.LENGTH_SHORT).show();
-				}
-				break;
-			}
-			default:
-				break;
-			}
-		};
-	};
+	
 //   	/**
 // 	 * create the order info. 创建订单信息
 // 	 * 
