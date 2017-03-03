@@ -93,14 +93,11 @@ RCT_REMAP_METHOD(pay, options:(NSDictionary *)options
             //NSLog(@"reslut = %@",resultDic);
             NSString *resultStatus = resultDic[@"resultStatus"];
             
-            if(resultStatus==@"9000"){
-              NSString *string1=@"支付成功";
-              NSString *r= [string1 stringByAppendingString:resultStatus];
-              resolve(r);
+            NSString *successStatus = @"9000";  
+            if([resultStatus isEqualToString:successStatus]){
+              resolve(@"支付成功");
             }else{
-              NSString *string1=@"支付失败";
-              NSString *r= [string1 stringByAppendingString:resultStatus];
-              resolve(r);
+              resolve(@"支付失败");
             }
             
         }];
