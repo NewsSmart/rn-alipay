@@ -80,7 +80,7 @@ RCT_REMAP_METHOD(pay, options:(NSDictionary *)options
     
     //将签名成功字符串格式化为订单字符串,请严格按照该格式
     /*NSString *orderString = nil;*/
-    *NSString *payInfo = [options objectForKey:@"payInfo"];
+    NSString *payInfo = [options objectForKey:@"payInfo"];
     if (payInfo != nil) {
         /*orderString = [NSString stringWithFormat:@"%@&sign=\"%@\"&sign_type=\"%@\"",
                        orderSpec, signedString, @"RSA"];
