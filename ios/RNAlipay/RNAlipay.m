@@ -92,10 +92,11 @@ RCT_REMAP_METHOD(pay, options:(NSDictionary *)options
         [[AlipaySDK defaultService] payOrder:payInfo fromScheme:appScheme callback:^(NSDictionary *resultDic) {
             //NSLog(@"reslut = %@",resultDic);
             NSString *resultStatus = resultDic[@"resultStatus"];
+            
             if(resultStatus==@"9000"){
-              resolve(@"支付成功");
+              resolve(@"支付成功"+resultStatus);
             }else{
-              resolve(@"支付失败");
+              resolve(@"支付失败"+resultStatus);
             }
             
         }];
