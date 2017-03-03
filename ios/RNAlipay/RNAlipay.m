@@ -20,15 +20,15 @@ RCT_REMAP_METHOD(pay, options:(NSDictionary *)options
     /*============================================================================*/
     /*=======================需要填写商户app申请的===================================*/
     /*============================================================================*/
-    NSString *partner = [options objectForKey:@"partner"];
+    /*NSString *partner = [options objectForKey:@"partner"];
     NSString *seller = [options objectForKey:@"seller"];
-    NSString *privateKey = [options objectForKey:@"privateKey"];
+    NSString *privateKey = [options objectForKey:@"privateKey"];*/
     /*============================================================================*/
     /*============================================================================*/
     /*============================================================================*/
     
     //partner和seller获取失败,提示
-    if ([partner length] == 0 ||
+    /*if ([partner length] == 0 ||
         [seller length] == 0 ||
         [privateKey length] == 0)
     {
@@ -43,13 +43,13 @@ RCT_REMAP_METHOD(pay, options:(NSDictionary *)options
         reject(@"错误", @"缺少partner或者seller或者私钥。", error);
         
         return;
-    }
+    }*/
     
     /*
      *生成订单信息及签名
      */
     //将商品信息赋予AlixPayOrder的成员变量
-    Order *order = [[Order alloc] init];
+    /*Order *order = [[Order alloc] init];
     order.partner = partner;
     order.sellerID = seller;
     order.outTradeNO = [options objectForKey:@"outTradeNO"]; //订单ID（由商家自行制定）
@@ -76,28 +76,31 @@ RCT_REMAP_METHOD(pay, options:(NSDictionary *)options
     
     //获取私钥并将商户信息签名,外部商户可以根据情况存放私钥和签名,只需要遵循RSA签名规范,并将签名字符串base64编码和UrlEncode
     id<DataSigner> signer = CreateRSADataSigner(privateKey);
-    NSString *signedString = [signer signString:orderSpec];
+    NSString *signedString = [signer signString:orderSpec];*/
     
     //将签名成功字符串格式化为订单字符串,请严格按照该格式
-    NSString *orderString = nil;
-    if (signedString != nil) {
-        orderString = [NSString stringWithFormat:@"%@&sign=\"%@\"&sign_type=\"%@\"",
+    /*NSString *orderString = nil;*/
+    *NSString *payInfo = [options objectForKey:@"payInfo"];
+    if (payInfo != nil) {
+        /*orderString = [NSString stringWithFormat:@"%@&sign=\"%@\"&sign_type=\"%@\"",
                        orderSpec, signedString, @"RSA"];
-        NSLog(@"orderString = %@", orderString);
+        NSLog(@"orderString = %@", orderString);*/
         
         //resolve(@"支付成功!");
+        NSString *appScheme = [options objectForKey:@"appSchemeIOS"];
         
-        [[AlipaySDK defaultService] payOrder:orderString fromScheme:appScheme callback:^(NSDictionary *resultDic) {
-            NSLog(@"reslut = %@",resultDic);
-            
-            NSLog(@"orderString = %@", @"支付成功啦啦啦啦！");
-            resolve(@"支付成功!");
+        [[AlipaySDK defaultService] payOrder:payInfo fromScheme:appScheme callback:^(NSDictionary *resultDic) {
+            //NSLog(@"reslut = %@",resultDic);
+            NSString *result = resultDic[@"result"];
+            //NSLog(@"orderString = %@", @"支付成功啦啦啦啦！");
+            resolve(result);
         }];
         return;
     }
     
-    NSError *error = nil;
-    reject(@"支付失败", @"参数错误", error);
+    //NSError *error = nil;
+    //reject(@"支付失败", @"参数错误", error);
+    resolve(@"支付失败");
     
 //    if (str) {
 //        resolve(str);
